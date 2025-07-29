@@ -19,6 +19,7 @@ export class AuthService {
     @Inject(ENCRYPTION_SERVICE)
     private readonly encryptionAdapter: EncryptionService,
   ) {}
+
   async create(createUserDto: CreateUserDto) {
     const existUser = await this.userService.findUserByEmail(
       createUserDto.email,
