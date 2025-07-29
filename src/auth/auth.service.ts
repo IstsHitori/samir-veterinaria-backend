@@ -1,26 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import {
+  ENCRYPTION_SERVICE,
+  EncryptionService,
+} from 'src/common/interfaces/Encryption-service.interface';
+import { USER_VALIDATION_MESSAGES } from 'src/user/constants';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
-
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  constructor(
+    @InjectModel(User.name)
+    private readonly userModel: Model<User>,
+    private readonly userService: UserService,
+    @Inject(ENCRYPTION_SERVICE)
+    private readonly encryptionAdapter: EncryptionService,
+  ) {}
+  async create(createUserDto: CreateUserDto) {
+    const existUser = await this.userService.findUserByEmail(
+      createUserDto.email,
+    );
+    if (existUser)
+      throw new BadRequestException(
+        USER_VALIDATION_MESSAGES.USER_ALREADY_EXIST,
+      );
+    const user = new this.userModel(createUserDto);
+    user.password = await this.encryptionAdapter.hash(createUserDto.password);
+    return user;
   }
 }
