@@ -5,15 +5,19 @@ import { TokenModule } from './token/token.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommonModule } from './common/common.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRoot(process.env.MONGODB!),
     AuthModule,
     UserModule,
     TokenModule,
     CommonModule,
+    MailModule,
   ],
 })
 export class AppModule {}

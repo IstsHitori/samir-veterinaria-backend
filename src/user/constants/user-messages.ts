@@ -16,4 +16,5 @@ export enum USER_VALIDATION_MESSAGES {
   IS_ACTIVE_BOOLEAN = 'El campo de activo debe ser verdadero o falso.',
   LAST_LOGIN_DATE = 'La fecha de último acceso debe ser una fecha válida.',
   USER_ALREADY_EXIST = 'Ya existe un usuario con este correo',
+  SEND_MAIL_ERROR = 'Ha habido un error al enviar el e-mail',
 }
