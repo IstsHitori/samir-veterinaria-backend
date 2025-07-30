@@ -8,6 +8,7 @@ export enum USER_VALIDATION_MESSAGES {
   PASSWORD_REQUIRED = 'La contraseña es obligatoria.',
   PASSWORD_STRING = 'La contraseña debe ser una cadena de texto.',
   PASSWORD_COMPLEXITY = 'La contraseña debe tener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial como @, $, #, entre otros.',
+  PASSWORD_INVALID = 'Email o contraseña incorrectos',
   ROLE_REQUIRED = 'El rol es obligatorio.',
   ROLE_INVALID = 'El rol seleccionado no es válido.',
   EMAIL_VALIDATED_BOOLEAN = 'El campo de validación de correo debe ser verdadero o falso.',
@@ -19,4 +20,10 @@ export enum USER_VALIDATION_MESSAGES {
   USER_NOT_FOUND = 'No se encontró el usuario',
   USER_INACTIVE = 'El usuario está inactivo',
   SEND_MAIL_ERROR = 'Ha habido un error al enviar el e-mail',
+  NEW_PASSWORD_REQUIRED = 'La nueva contraseña es obligatoria.',
+  NEW_PASSWORD_STRING = 'La nueva contraseña debe ser una cadena de texto.',
+  NEW_PASSWORD_COMPLEXITY = 'La nueva contraseña debe tener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial como @, $, #, entre otros.',
+  CONFIRM_PASSWORD_REQUIRED = 'Es obligatorio confirmar la contraseña.',
+  CONFIRM_PASSWORD_STRING = 'La confirmación de la contraseña debe ser una cadena de texto.',
+  CONFIRM_PASSWORD_MATCH = 'La confirmación de la contraseña debe coincidir con la nueva contraseña.',
 }
