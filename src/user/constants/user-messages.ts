@@ -26,4 +26,7 @@ export enum USER_VALIDATION_MESSAGES {
   CONFIRM_PASSWORD_REQUIRED = 'Es obligatorio confirmar la contraseña.',
   CONFIRM_PASSWORD_STRING = 'La confirmación de la contraseña debe ser una cadena de texto.',
   CONFIRM_PASSWORD_MATCH = 'La confirmación de la contraseña debe coincidir con la nueva contraseña.',
+  JWT_TOKEN_NOT_VALID = 'Token no válido',
+  JWT_EMPTY = 'JWT_SECRET is not defined in the environment variables',
+  DONT_PERMISSION = 'No tienes permiso para esta acción',
 }

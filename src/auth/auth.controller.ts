@@ -5,15 +5,25 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ParseTokenPipe } from 'src/common/pipes/parse-token/parse-token.pipe';
 import { CreateUserDto, LoginUserDto } from 'src/user/dto';
 import { ForgotPasswordDto, ValidateTokenDto, UpdatePasswordDto } from './dto';
+import { Auth } from './decorators/auth.decorator';
+import { GetUser } from './decorators/get-user.decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get()
+  @Auth()
+  getUserProfile(@GetUser() user: User) {
+    return user;
+  }
 
   @Post('register')
   create(@Body() createUserDto: CreateUserDto) {

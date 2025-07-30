@@ -24,6 +24,8 @@ import { EMAIL_TYPE } from 'src/mail/interfaces/email-type';
 import { getTemplateEmail } from './helpers/get-options-email';
 import { CreateUserDto, LoginUserDto } from 'src/user/dto';
 import { ForgotPasswordDto, ValidateTokenDto, UpdatePasswordDto } from './dto';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -38,6 +40,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
+    private readonly JwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -54,7 +57,7 @@ export class AuthService {
   async login({ password, email }: LoginUserDto) {
     const foundUser = await this.findAndValidateUserExistAndActive(email);
     await this.isMatchPasswordLogin(password, foundUser.password);
-    return 'Iniciando sesion...';
+    return { token: this.getJwtToken({ id: foundUser._id as string }) };
   }
 
   async confirmAccount(token: string) {
@@ -192,5 +195,11 @@ export class AuthService {
 
     if (!isMatch)
       throw new BadRequestException(USER_VALIDATION_MESSAGES.PASSWORD_INVALID);
+  }
+
+  private getJwtToken(payload: JwtPayload) {
+    const token = this.JwtService.sign(payload);
+
+    return token;
   }
 }
