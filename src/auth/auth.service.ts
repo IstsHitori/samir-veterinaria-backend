@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -14,7 +19,9 @@ import { UserService } from 'src/user/user.service';
 import { generateNumericToken } from './helpers/number-token';
 import { EmailsTemplates } from 'src/mail/templates/emails.templates';
 import { ConfigService } from '@nestjs/config';
-import { TokenType } from 'src/token/constants/token-type';
+import { TOKEN_TYPE } from 'src/token/constants/token-type';
+import { TokenService } from 'src/token/token.service';
+import { TOKEN_MESSAGES } from 'src/common/constants/token-messages';
 
 @Injectable()
 export class AuthService {
@@ -23,12 +30,12 @@ export class AuthService {
     private readonly userModel: Model<User>,
     @InjectModel(Token.name)
     private readonly tokenModel: Model<Token>,
-
-    private readonly userService: UserService,
     @Inject(ENCRYPTION_SERVICE)
     private readonly encryptionAdapter: EncryptionService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    private readonly userService: UserService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -42,6 +49,27 @@ export class AuthService {
     return 'Se ha registrado la cuenta correctamente';
   }
 
+  async confirmAccount(token: string) {
+    const foundToken = await this.tokenService.findOneByToken(token);
+    if (!foundToken)
+      throw new NotFoundException(TOKEN_MESSAGES.TOKEN_NOT_FOUND);
+
+    if (foundToken.type !== TOKEN_TYPE.CONFIRMATION)
+      throw new BadRequestException(TOKEN_MESSAGES.TOKEN_INVALID);
+
+    const foundUser = await this.userService.findOne(foundToken.userId);
+    if (!foundUser || foundUser.isDeleted)
+      throw new NotFoundException(USER_VALIDATION_MESSAGES.USER_NOT_FOUND);
+
+    if (!foundUser.isActive)
+      throw new BadRequestException(USER_VALIDATION_MESSAGES.USER_INACTIVE);
+
+    foundUser.emailValidated = true;
+    await Promise.all([foundToken.deleteOne(), foundUser.save()]);
+    return 'Cuenta confirmada correctamente';
+  }
+
+  //--------------------
   private async ensureUserDoesNotExist(email: string) {
     const existUser = await this.userService.findUserByEmail(email);
     if (existUser) {
@@ -61,7 +89,7 @@ export class AuthService {
     return new this.tokenModel({
       userId,
       value: generateNumericToken(),
-      type: TokenType.CONFIRMATION,
+      type: TOKEN_TYPE.CONFIRMATION,
     });
   }
 

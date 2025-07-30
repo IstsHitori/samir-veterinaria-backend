@@ -12,7 +12,7 @@ import { Token, TokenSchema } from './entities/token.entity';
       },
     ]),
   ],
-  exports: [MongooseModule],
+  exports: [MongooseModule, TokenService],
   providers: [TokenService],
 })
 export class TokenModule {}

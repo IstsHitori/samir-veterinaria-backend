@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { TokenType } from '../constants/token-type';
+import { TOKEN_TYPE } from '../constants/token-type';
 @Schema({ timestamps: true })
 export class Token extends Document {
   @Prop({ required: true })
@@ -15,8 +15,8 @@ export class Token extends Document {
   })
   expiresAt: Date;
 
-  @Prop({ required: true, type: String, enum: Object.values(TokenType) })
-  type: TokenType;
+  @Prop({ required: true, type: String, enum: Object.values(TOKEN_TYPE) })
+  type: TOKEN_TYPE;
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);
