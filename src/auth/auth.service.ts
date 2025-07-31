@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
@@ -38,6 +39,7 @@ export class AuthService {
     private readonly encryptionAdapter: EncryptionService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
     private readonly JwtService: JwtService,
@@ -167,7 +169,7 @@ export class AuthService {
     return foundToken;
   }
 
-  private async findAndValidateUserExistAndActive(term: string) {
+  async findAndValidateUserExistAndActive(term: string) {
     let foundUser: User | null = null;
     const isMongoId = isValidObjectId(term);
     if (isMongoId) {
