@@ -32,6 +32,14 @@ export class Owner {
     required: true,
   })
   telephone: string;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
+
+  @Prop({
+    default: null,
+  })
+  deletedAt: Date;
 }
 
 export const OwnerSchema = SchemaFactory.createForClass(Owner);

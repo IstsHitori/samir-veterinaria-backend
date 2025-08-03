@@ -4,6 +4,7 @@ export enum OWNER_MESSAGES {
   DOCUMENT_REQUIRED = 'El documento es obligatorio.',
   DOCUMENT_STRING = 'El documento debe ser una cadena de texto.',
   DOCUMENT_LENGTH = 'El documento debe tener entre 6 y 10 dígitos',
+  DOCUMENT_UNIQUE = 'El documento ya está registrado',
   ADDRESS_REQUIRED = 'La dirección es obligatoria.',
   ADDRESS_STRING = 'La dirección debe ser una cadena de texto.',
   EMAIL_REQUIRED = 'El correo electrónico es obligatorio.',
@@ -12,4 +13,8 @@ export enum OWNER_MESSAGES {
   TELEPHONE_REQUIRED = 'El teléfono es obligatorio.',
   TELEPHONE_STRING = 'El teléfono debe ser una cadena de texto.',
   TELEPHONE_LENGTH = 'El teléfono debe tener exactamente 10 dígitos.',
+  OWNER_DOCUMENT_EXIST = 'El dueño con este documento ya existe',
+  OWNER_EMAIL_EXIST = 'El dueño con este email ya existe',
+  OWNER_NOT_FOUD = 'El dueño no existe',
+  ID_WONER_NOT_VALID = 'El ID del dueño no es válido',
 }

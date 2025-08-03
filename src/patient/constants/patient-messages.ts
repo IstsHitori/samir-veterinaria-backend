@@ -14,6 +14,7 @@ export enum PATIENT_MESSAGES {
   HISTORY_STRING = 'La historia clínica debe ser una cadena de texto.',
   OWNERID_REQUIRED = 'El ID del dueño es obligatorio.',
   OWNERID_MONGOID = 'El ID del dueño debe ser un MongoID válido.',
+  OWNER_NOT_FOUND = 'El dueño no existe',
   MEDICALCONDITIONS_STRING = 'Cada condición médica debe ser una cadena de texto.',
   MEDICALCONDITIONS_ARRAY = 'Las condiciones médicas deben ser una lista de texto.',
   ALLERGIES_STRING = 'Cada alergia debe ser una cadena de texto.',
@@ -28,4 +29,5 @@ export enum PATIENT_MESSAGES {
   REGISTEREDBY_REQUIRED = 'El usuario que registra es obligatorio.',
   REGISTEREDBY_MONGOID = 'El usuario que registra debe ser un MongoID válido.',
   PATIENT_NOT_FOUND = 'Paciente no encontrado.',
+  ID_PATIENT_NOT_VALID = 'El ID del del paciente no es válido',
 }
