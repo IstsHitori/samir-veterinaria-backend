@@ -1,4 +1,5 @@
 export enum USER_VALIDATION_MESSAGES {
+  ID_USER_NOT_VALID = 'El ID del usuario no es válido',
   FIRST_NAME_REQUIRED = 'El nombre es obligatorio.',
   FIRST_NAME_STRING = 'El nombre debe ser una cadena de texto.',
   LAST_NAME_REQUIRED = 'El apellido es obligatorio.',
@@ -19,6 +20,7 @@ export enum USER_VALIDATION_MESSAGES {
   USER_ALREADY_EXIST = 'Ya existe un usuario con este correo',
   USER_NOT_FOUND = 'No se encontró el usuario',
   USER_INACTIVE = 'El usuario está inactivo',
+  CANT_BE_ADMIN = 'No puede haber otro usuario administrador',
   SEND_MAIL_ERROR = 'Ha habido un error al enviar el e-mail',
   NEW_PASSWORD_REQUIRED = 'La nueva contraseña es obligatoria.',
   NEW_PASSWORD_STRING = 'La nueva contraseña debe ser una cadena de texto.',

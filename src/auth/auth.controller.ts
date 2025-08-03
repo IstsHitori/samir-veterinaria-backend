@@ -22,7 +22,7 @@ export class AuthController {
   @Get()
   @Auth()
   getUserProfile(@GetUser() user: User) {
-    return {profile:user};
+    return { profile: user };
   }
 
   @Post('register')

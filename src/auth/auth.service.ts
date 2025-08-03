@@ -13,7 +13,7 @@ import {
 } from 'src/common/interfaces/Encryption-service.interface';
 import { MailService } from 'src/mail/mail.service';
 import { Token } from 'src/token/entities/token.entity';
-import { USER_VALIDATION_MESSAGES } from 'src/user/constants';
+import { Role, USER_VALIDATION_MESSAGES } from 'src/user/constants';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { generateNumericToken } from './helpers/number-token';
@@ -46,6 +46,7 @@ export class AuthService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    await this.validIfAdmin(createUserDto.role);
     await this.ensureUserDoesNotExist(createUserDto.email);
     const user = await this.createUser(createUserDto);
     const token = this.createToken(user._id as string, TOKEN_TYPE.CONFIRMATION);
@@ -203,5 +204,13 @@ export class AuthService {
     const token = this.JwtService.sign(payload);
 
     return token;
+  }
+
+  private async validIfAdmin(role: Role) {
+    if (role !== Role.ADMIN) return;
+    const user = await this.userModel.findOne({ role });
+
+    if (user)
+      throw new BadRequestException(USER_VALIDATION_MESSAGES.CANT_BE_ADMIN);
   }
 }

@@ -6,7 +6,7 @@ import {
 import { User } from 'src/user/entities/user.entity';
 
 //TODO:Modificar si se necesitan otros campos a estos
-type ValidData = 'email' | 'firstName';
+type ValidData = 'email' | 'firstName' | '_id';
 
 export const GetUser = createParamDecorator(
   (data: ValidData, ctx: ExecutionContext) => {
