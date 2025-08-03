@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CommonModule } from './common/common.module';
 import { MailModule } from './mail/mail.module';
 import { PatientModule } from './patient/patient.module';
+import { OwnerModule } from './owner/owner.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -31,6 +32,7 @@ import * as Joi from 'joi';
     CommonModule,
     MailModule,
     PatientModule,
+    OwnerModule,
   ],
 })
 export class AppModule {}
