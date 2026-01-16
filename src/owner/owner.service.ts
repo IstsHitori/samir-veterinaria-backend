@@ -17,8 +17,11 @@ export class OwnerService {
   ) {}
   async create(createOwnerDto: CreateOwnerDto) {
     await this.ensureOwnerDoesNotExist(createOwnerDto);
-    await this.ownerModel.create(createOwnerDto);
-    return 'Dueño registrado';
+    const owner = await this.ownerModel.create(createOwnerDto);
+    return {
+      ownerId: owner._id,
+      message: 'Dueño creado',
+    };
   }
 
   async findAll() {
@@ -26,6 +29,72 @@ export class OwnerService {
       .find({ isDeleted: false })
       .select('-__v -isDeleted -deletedAt');
     return owners;
+  }
+
+  async findAllOwnersWithPatients() {
+    const ownersWithPatients = await this.ownerModel.aggregate([
+      { $match: { isDeleted: false } },
+      {
+        $lookup: {
+          from: 'patients',
+          let: { ownerId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$ownerId', '$$ownerId'] },
+              },
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'registeredBy',
+                foreignField: '_id',
+                as: 'registeredBy',
+              },
+            },
+            {
+              $unwind: {
+                path: '$registeredBy',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $project: {
+                // Incluye todos los campos del paciente
+                _id: 1,
+                name: 1,
+                type: 1,
+                breed: 1,
+                birthDate: 1,
+                gender: 1,
+                weight: 1,
+                size: 1,
+                history: 1,
+                ownerId: 1,
+                medicalConditions: 1,
+                allergies: 1,
+                isVaccinated: 1,
+                vaccines: 1,
+                isActive: 1,
+                deletedAt: 1,
+                deletedBy: 1,
+                isDeleted: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                // registeredBy con campos filtrados
+                registeredBy: {
+                  _id: '$registeredBy._id',
+                  firstName: '$registeredBy.firstName',
+                  role: '$registeredBy.role',
+                },
+              },
+            },
+          ],
+          as: 'patients',
+        },
+      },
+    ]);
+    return ownersWithPatients;
   }
 
   async findOne(id: string) {
@@ -42,15 +111,15 @@ export class OwnerService {
     const foundOwner = await this.findOne(id);
     if (updateOwnerDto.email && updateOwnerDto.email !== foundOwner.email) {
       await this.assertEmailIsUnique(id, updateOwnerDto.email);
-      await foundOwner.updateOne(updateOwnerDto);
     }
     if (
       updateOwnerDto.document &&
       updateOwnerDto.document !== foundOwner.document
     ) {
       await this.assertDocumentIsUnique(id, updateOwnerDto.document);
-      await foundOwner.updateOne(updateOwnerDto);
     }
+    await foundOwner.updateOne(updateOwnerDto);
+
     return 'Se acutalizó el dueño';
   }
 

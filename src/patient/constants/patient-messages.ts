@@ -30,4 +30,7 @@ export enum PATIENT_MESSAGES {
   REGISTEREDBY_MONGOID = 'El usuario que registra debe ser un MongoID válido.',
   PATIENT_NOT_FOUND = 'Paciente no encontrado.',
   ID_PATIENT_NOT_VALID = 'El ID del del paciente no es válido',
+  TYPE_PET_REQUIRED = 'El tipo de mascota es requerido',
+  TYPE_PET_STRING = 'El tipo de mascota debe ser una cadena de texto',
+  TYPE_PET_INVALID = 'El tipo de mascota es inválido',
 }

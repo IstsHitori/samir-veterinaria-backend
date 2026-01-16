@@ -27,13 +27,25 @@ export class PatientService {
   }
 
   async findAll() {
-    return this.patientModel
+    const patients = this.patientModel
       .find({ isDeleted: false })
       .select('-__v')
-      .populate({ path: 'ownerId', select: '-__v -createdAt -updatedAt' })
+      .populate({
+        path: 'ownerId',
+        select: '-__v -createdAt -updatedAt -deletedAt -isDeleted',
+      })
       .populate({ path: 'registeredBy', select: '_id firstName role' })
       .populate({ path: 'deletedBy', select: '_id firstName role' })
       .exec();
+    return patients;
+  }
+
+  async getMyPatients(userId: string) {
+    const myPatients = await this.patientModel.find({
+      registeredBy: userId,
+      isDeleted: false,
+    });
+    return myPatients;
   }
 
   async findOne(id: string) {
@@ -54,12 +66,34 @@ export class PatientService {
     return foundPatient;
   }
 
+  async findSimpleOneById(id: string) {
+    const foundPatient = await this.patientModel.findById(id);
+    if (!foundPatient)
+      throw new NotFoundException(PATIENT_MESSAGES.PATIENT_NOT_FOUND);
+    return foundPatient;
+  }
+
   async update(id: string, updatePatientDto: UpdatePatientDto) {
     const foundPatient = await this.findOne(id);
 
     await foundPatient.updateOne(updatePatientDto);
 
     return 'Paciente actualizado';
+  }
+
+  async desactivatePatient(id: string) {
+    const foundPatient = await this.findOne(id);
+    foundPatient.isActive = false;
+    await foundPatient.save();
+    return 'Paciente desactivado';
+  }
+
+  async activatePatient(id: string) {
+    const foundPatient = await this.findOne(id);
+    foundPatient.isActive = true;
+
+    await foundPatient.save();
+    return 'Paciente activado';
   }
 
   async remove(idUser: string, id: string) {

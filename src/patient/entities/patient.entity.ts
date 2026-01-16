@@ -14,12 +14,27 @@ export enum Size {
   LARGE = 'grande',
 }
 
+export enum Species {
+  DOG = 'perro',
+  CAT = 'gato',
+  BIRD = 'ave',
+  RABBIT = 'conejo',
+  HAMSTER = 'hamster',
+  TURTLE = 'tortuga',
+  FISH = 'pez',
+  FERRET = 'huron',
+  OTHER = 'otro',
+}
+
 @Schema({
   timestamps: true,
 })
 export class Patient {
   @Prop({ required: true })
   name: string;
+
+  @Prop({ required: true, type: String, enum: Species })
+  type: string;
 
   @Prop({ required: true })
   breed: string;

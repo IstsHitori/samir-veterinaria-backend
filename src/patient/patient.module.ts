@@ -19,5 +19,6 @@ import { AuthModule } from 'src/auth/auth.module';
   ],
   controllers: [PatientController],
   providers: [PatientService],
+  exports: [PatientService],
 })
 export class PatientModule {}

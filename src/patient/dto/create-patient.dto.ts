@@ -8,13 +8,17 @@ import {
   IsBoolean,
   IsMongoId,
 } from 'class-validator';
-import { Gender, Size } from '../entities/patient.entity';
+import { Gender, Size, Species } from '../entities/patient.entity';
 import { PATIENT_MESSAGES } from '../constants/patient-messages';
 
 export class CreatePatientDto {
   @IsString({ message: PATIENT_MESSAGES.NAME_STRING })
   @IsNotEmpty({ message: PATIENT_MESSAGES.NAME_REQUIRED })
   name: string;
+
+  @IsEnum(Species, { message: PATIENT_MESSAGES.TYPE_PET_INVALID })
+  @IsNotEmpty({ message: PATIENT_MESSAGES.TYPE_PET_REQUIRED })
+  type: string;
 
   @IsString({ message: PATIENT_MESSAGES.BREED_STRING })
   @IsNotEmpty({ message: PATIENT_MESSAGES.BREED_REQUIRED })

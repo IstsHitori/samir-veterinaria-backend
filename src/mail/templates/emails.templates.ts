@@ -63,7 +63,7 @@ export class EmailsTemplates {
               Gracias señor(a) <span style="font-weight:bold;">${to}</span> por registrarte. Para activar tu cuenta, por favor haz clic en el siguiente botón y digite el siguiente código: <span style="font-weight:bold;">${token}</span>
             </p>
             <a
-              href="${FRONT_URL}/confirmar?token=${token}"
+              href="${FRONT_URL}/auth/confirm?token=${token}"
               class="btn"
               target="_blank"
             >Confirmar cuenta</a>
@@ -281,7 +281,7 @@ export class EmailsTemplates {
                 También puedes restablecer tu contraseña haciendo clic en el siguiente botón:
               </p>
               <a
-                href="${FRONT_URL}/restablecer-password?token=${token}"
+                href="${FRONT_URL}/auth/reset-password?token=${token}"
                 class="btn"
                 target="_blank"
               >Restablecer contraseña</a>

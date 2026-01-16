@@ -20,13 +20,24 @@ export class OwnerController {
   @Post()
   @Auth(Role.ADMIN, Role.AUXILIARY)
   create(@Body() createOwnerDto: CreateOwnerDto) {
-    return this.ownerService.create(createOwnerDto);
+    const result = this.ownerService.create(createOwnerDto);
+    return result;
   }
 
   @Get()
   @Auth(Role.ADMIN, Role.AUXILIARY)
-  findAll() {
-    return this.ownerService.findAll();
+  async findAll() {
+    const owners = await this.ownerService.findAll();
+    return { owners };
+  }
+
+  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Get('pets')
+  async findAllOwnersWithPets() {
+    const ownersWithPets = await this.ownerService.findAllOwnersWithPatients();
+    return {
+      owners: ownersWithPets,
+    };
   }
 
   @Get(':id')

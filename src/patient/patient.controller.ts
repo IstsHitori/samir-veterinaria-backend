@@ -29,8 +29,14 @@ export class PatientController {
 
   @Get()
   @Auth(Role.ADMIN, Role.AUXILIARY)
-  findAll() {
-    return this.patientService.findAll();
+  async findAll() {
+    const patients = await this.patientService.findAll();
+    return { patients };
+  }
+  @Get('my-patients')
+  @Auth(Role.ADMIN, Role.VETERINARY)
+  getMyPatients(@GetUser('_id') userId: string) {
+    return this.patientService.getMyPatients(userId);
   }
 
   @Get(':id')
@@ -43,6 +49,18 @@ export class PatientController {
   @Auth(Role.ADMIN, Role.AUXILIARY)
   update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
     return this.patientService.update(id, updatePatientDto);
+  }
+
+  @Patch(':id/desactivate')
+  @Auth(Role.ADMIN)
+  desactivatePatient(@Param('id') id: string) {
+    return this.patientService.desactivatePatient(id);
+  }
+
+  @Patch(':id/activate')
+  @Auth(Role.ADMIN)
+  activatePatient(@Param('id') id: string) {
+    return this.patientService.activatePatient(id);
   }
 
   @Delete(':id')

@@ -29,7 +29,10 @@ export class UserService {
   async findOne(id: string) {
     if (!isValidObjectId(id))
       throw new BadRequestException(USER_VALIDATION_MESSAGES.ID_USER_NOT_VALID);
-    return await this.userModel.findById(id);
+    const foundUser = await this.userModel.findById(id);
+    if (!foundUser)
+      throw new NotFoundException(USER_VALIDATION_MESSAGES.USER_NOT_FOUND);
+    return foundUser;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -42,9 +45,6 @@ export class UserService {
 
   async remove(id: string) {
     const user = await this.findOne(id);
-
-    if (!user)
-      throw new NotFoundException(USER_VALIDATION_MESSAGES.USER_NOT_FOUND);
 
     if (user.isDeleted)
       throw new NotFoundException(USER_VALIDATION_MESSAGES.USER_NOT_FOUND);
@@ -66,9 +66,6 @@ export class UserService {
   async desactivateUser(id: string) {
     const user = await this.findOne(id);
 
-    if (!user)
-      throw new NotFoundException(USER_VALIDATION_MESSAGES.USER_NOT_FOUND);
-
     user.isActive = false;
 
     await user.save();
@@ -78,9 +75,6 @@ export class UserService {
 
   async activateUser(id: string) {
     const user = await this.findOne(id);
-
-    if (!user)
-      throw new NotFoundException(USER_VALIDATION_MESSAGES.USER_NOT_FOUND);
 
     user.isActive = true;
 

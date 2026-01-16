@@ -8,6 +8,7 @@ import { CommonModule } from './common/common.module';
 import { MailModule } from './mail/mail.module';
 import { PatientModule } from './patient/patient.module';
 import { OwnerModule } from './owner/owner.module';
+import { MedicalReportsModule } from './medical-reports/medical-reports.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -33,6 +34,7 @@ import * as Joi from 'joi';
     MailModule,
     PatientModule,
     OwnerModule,
+    MedicalReportsModule,
   ],
 })
 export class AppModule {}
