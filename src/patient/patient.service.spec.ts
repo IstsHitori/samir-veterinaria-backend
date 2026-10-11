@@ -70,6 +70,14 @@ describe('PatientService', () => {
         NotFoundException,
       );
     });
+
+    it('lanza OWNER_NOT_FOUND si el servicio de dueños retorna vacío', async () => {
+      ownerService.findOne.mockResolvedValue(null);
+
+      await expect(service.create('user-1', validDto as any)).rejects.toThrow(
+        PATIENT_MESSAGES.OWNER_NOT_FOUND,
+      );
+    });
   });
 
   describe('findAll', () => {
