@@ -18,20 +18,20 @@ export class OwnerController {
   constructor(private readonly ownerService: OwnerService) {}
 
   @Post()
-  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Auth(Role.ADMIN, Role.AUXILIARY, Role.VETERINARY)
   create(@Body() createOwnerDto: CreateOwnerDto) {
     const result = this.ownerService.create(createOwnerDto);
     return result;
   }
 
   @Get()
-  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Auth(Role.ADMIN, Role.AUXILIARY, Role.VETERINARY)
   async findAll() {
     const owners = await this.ownerService.findAll();
     return { owners };
   }
 
-  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Auth(Role.ADMIN, Role.AUXILIARY, Role.VETERINARY)
   @Get('pets')
   async findAllOwnersWithPets() {
     const ownersWithPets = await this.ownerService.findAllOwnersWithPatients();
@@ -41,7 +41,7 @@ export class OwnerController {
   }
 
   @Get(':id')
-  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Auth(Role.ADMIN, Role.AUXILIARY, Role.VETERINARY)
   findOne(@Param('id') id: string) {
     return this.ownerService.findOne(id);
   }

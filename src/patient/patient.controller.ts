@@ -19,7 +19,7 @@ export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
   @Post()
-  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Auth(Role.ADMIN, Role.AUXILIARY, Role.VETERINARY)
   create(
     @GetUser('_id') idUser: string,
     @Body() createPatientDto: CreatePatientDto,
@@ -28,7 +28,7 @@ export class PatientController {
   }
 
   @Get()
-  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Auth(Role.ADMIN, Role.AUXILIARY, Role.VETERINARY)
   async findAll() {
     const patients = await this.patientService.findAll();
     return { patients };
@@ -40,7 +40,7 @@ export class PatientController {
   }
 
   @Get(':id')
-  @Auth(Role.ADMIN, Role.AUXILIARY)
+  @Auth(Role.ADMIN, Role.AUXILIARY, Role.VETERINARY)
   findOne(@Param('id') id: string) {
     return this.patientService.findOne(id);
   }
