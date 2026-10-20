@@ -89,6 +89,8 @@ export class MedicalReportsService {
       .find({
         patientId: id,
       })
+      // El reporte más reciente primero
+      .sort({ createdAt: -1 })
       .populate({
         path: 'userId',
         select: '_id firstName lastName role email',

@@ -37,6 +37,7 @@ const validDto = {
 describe('PatientService', () => {
   let patientModel: any;
   let ownerService: any;
+  let medicalReportModel: any;
   let service: PatientService;
 
   beforeEach(() => {
@@ -44,7 +45,12 @@ describe('PatientService', () => {
     patientModel.find = jest.fn();
     patientModel.findById = jest.fn();
     ownerService = { findOne: jest.fn() };
-    service = new PatientService(patientModel, ownerService);
+    medicalReportModel = { create: jest.fn().mockResolvedValue({}) };
+    service = new PatientService(
+      patientModel,
+      ownerService,
+      medicalReportModel,
+    );
   });
 
   describe('create', () => {
@@ -58,7 +64,28 @@ describe('PatientService', () => {
       expect(ownerService.findOne).toHaveBeenCalledWith(OWNER_ID);
       expect(patient.registeredBy).toBe('user-1');
       expect(patient.save).toHaveBeenCalled();
-      expect(result).toBe('Paciente registrado');
+      expect(result).toEqual({
+        message: 'Paciente registrado',
+        patientId: VALID_ID,
+      });
+      expect(medicalReportModel.create).not.toHaveBeenCalled();
+    });
+
+    it('crea el primer reporte clínico cuando se envía historia', async () => {
+      ownerService.findOne.mockResolvedValue({ _id: OWNER_ID });
+      const patient = buildPatient();
+      patientModel.mockReturnValue(patient);
+
+      await service.create('user-1', {
+        ...validDto,
+        history: '  Convive con dos gatos  ',
+      } as any);
+
+      expect(medicalReportModel.create).toHaveBeenCalledWith({
+        userId: 'user-1',
+        patientId: VALID_ID,
+        details: 'Convive con dos gatos',
+      });
     });
 
     it('propaga el error cuando el dueño no existe', async () => {

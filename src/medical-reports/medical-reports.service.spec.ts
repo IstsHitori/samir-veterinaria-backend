@@ -10,6 +10,7 @@ const chain = (final: any) => {
   const q: any = {};
   q.select = jest.fn(() => q);
   q.populate = jest.fn(() => q);
+  q.sort = jest.fn(() => q);
   q.exec = jest.fn().mockResolvedValue(final);
   q.then = (resolve: any) => resolve(final);
   return q;
@@ -133,12 +134,14 @@ describe('MedicalReportsService', () => {
     it('valida el paciente y busca sus reportes', async () => {
       patientService.findOne.mockResolvedValue({ _id: PATIENT_ID });
       const reports = [{ _id: 'r1' }];
-      reportModel.find.mockReturnValue(chain(reports));
+      const query = chain(reports);
+      reportModel.find.mockReturnValue(query);
 
       const result = await service.findAllByIdPatient(PATIENT_ID);
 
       expect(patientService.findOne).toHaveBeenCalledWith(PATIENT_ID);
       expect(reportModel.find).toHaveBeenCalledWith({ patientId: PATIENT_ID });
+      expect(query.sort).toHaveBeenCalledWith({ createdAt: -1 });
       expect(result).toBe(reports);
     });
   });

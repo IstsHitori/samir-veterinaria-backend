@@ -10,12 +10,15 @@ import { Patient } from './entities/patient.entity';
 import { isValidObjectId, Model } from 'mongoose';
 import { OwnerService } from 'src/owner/owner.service';
 import { PATIENT_MESSAGES } from './constants/patient-messages';
+import { MedicalReport } from 'src/medical-reports/entities/medical-report.entity';
 
 @Injectable()
 export class PatientService {
   constructor(
     @InjectModel(Patient.name) private readonly patientModel: Model<Patient>,
     private readonly ownerService: OwnerService,
+    @InjectModel(MedicalReport.name)
+    private readonly medicalReportModel: Model<MedicalReport>,
   ) {}
   async create(userId: string, createPatientDto: CreatePatientDto) {
     await this.ensureOwnerExist(createPatientDto.ownerId);
@@ -23,7 +26,21 @@ export class PatientService {
     patient.registeredBy = userId;
     await patient.save();
 
-    return 'Paciente registrado';
+    // La historia clínica escrita al registrar el paciente queda como su
+    // primer reporte clínico, visible en el módulo de historias clínicas.
+    const history = createPatientDto.history?.trim();
+    if (history) {
+      await this.medicalReportModel.create({
+        userId,
+        patientId: patient._id.toString(),
+        details: history,
+      });
+    }
+
+    return {
+      message: 'Paciente registrado',
+      patientId: patient._id.toString(),
+    };
   }
 
   async findAll() {
