@@ -108,13 +108,15 @@ describe('AuthService', () => {
       ).rejects.toThrow(USER_VALIDATION_MESSAGES.CANT_BE_ADMIN);
     });
 
-    it('lanza BadRequest si falla el envío del email', async () => {
+    it('registra la cuenta e informa cuando falla el envío del email', async () => {
       userService.findUserByEmail.mockResolvedValue(null);
       mailService.sendEmail.mockResolvedValue(false);
 
-      await expect(service.create(dto as any)).rejects.toThrow(
-        USER_VALIDATION_MESSAGES.SEND_MAIL_ERROR,
-      );
+      const result = await service.create(dto as any);
+
+      expect(result).toContain('Se ha registrado la cuenta correctamente');
+      expect(result).toContain('no se pudo enviar el correo');
+      expect(userDoc.save).toHaveBeenCalled();
     });
   });
 

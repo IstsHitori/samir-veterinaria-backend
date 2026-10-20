@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
   forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -53,8 +54,15 @@ export class AuthService {
 
     await Promise.all([user.save(), token.save()]);
 
-    await this.sendEmail(user.email, token.value, EMAIL_TYPE.CONFIRM_ACCOUNT);
-    return 'Se ha registrado la cuenta correctamente';
+    const emailSent = await this.sendEmail(
+      user.email,
+      token.value,
+      EMAIL_TYPE.CONFIRM_ACCOUNT,
+    );
+
+    return emailSent
+      ? 'Se ha registrado la cuenta correctamente'
+      : 'Se ha registrado la cuenta correctamente, pero no se pudo enviar el correo de confirmación. Revisa la configuración de correo.';
   }
 
   async login({ password, email }: LoginUserDto) {
@@ -93,10 +101,15 @@ export class AuthService {
       foundUser._id as string,
       TOKEN_TYPE.PASSWORD_RESET,
     );
-    await Promise.all([
+    const [, emailSent] = await Promise.all([
       token.save(),
       this.sendEmail(foundUser.email, token.value, EMAIL_TYPE.RESET_PASSWORD),
     ]);
+
+    if (!emailSent)
+      throw new ServiceUnavailableException(
+        USER_VALIDATION_MESSAGES.SEND_MAIL_ERROR,
+      );
 
     return 'Se ha enviado al email las instrucciones para recuperar la contraseña';
   }
@@ -149,16 +162,18 @@ export class AuthService {
     });
   }
 
-  private async sendEmail(email: string, token: string, emailType: EMAIL_TYPE) {
+  private async sendEmail(
+    email: string,
+    token: string,
+    emailType: EMAIL_TYPE,
+  ): Promise<boolean> {
     const FRONT_URL = this.configService.get<string>('FRONT_URL')!;
     const template = getTemplateEmail({ token, email, FRONT_URL, emailType });
-    const hasSend = await this.mailService.sendEmail({
+    return await this.mailService.sendEmail({
       to: email,
       subject: emailType,
       htmlBody: template,
     });
-    if (!hasSend)
-      throw new BadRequestException(USER_VALIDATION_MESSAGES.SEND_MAIL_ERROR);
   }
 
   private async findAndValidateToken(value: string, tokenType: TOKEN_TYPE) {

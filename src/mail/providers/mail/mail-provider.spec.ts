@@ -32,10 +32,13 @@ describe('MailProvider', () => {
     expect(createTransport).toHaveBeenCalledWith({
       service: 'gmail',
       auth: { user: 'me@test.com', pass: 'secret' },
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
     });
   });
 
-  it('envía un email y retorna true', async () => {
+  it('envía un email con remitente explícito y retorna true', async () => {
     const provider = new MailProvider(configService as any);
 
     const result = await provider.sendEmail({
@@ -46,6 +49,7 @@ describe('MailProvider', () => {
 
     expect(result).toBe(true);
     expect(sendMail).toHaveBeenCalledWith({
+      from: '"Veterinaria Samir" <me@test.com>',
       to: 'a@a.com',
       subject: 'Hola',
       html: '<p>x</p>',
