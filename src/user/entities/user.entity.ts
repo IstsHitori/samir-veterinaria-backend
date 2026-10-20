@@ -28,8 +28,8 @@ export class User extends Document {
   @Prop({ default: false })
   emailValidated: boolean;
 
-  @Prop({ default: null })
-  deletedAt: Date;
+  @Prop({ type: Date, default: null })
+  deletedAt: Date | null;
 
   @Prop({ default: false })
   isDeleted: boolean;

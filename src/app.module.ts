@@ -9,6 +9,7 @@ import { MailModule } from './mail/mail.module';
 import { PatientModule } from './patient/patient.module';
 import { OwnerModule } from './owner/owner.module';
 import { MedicalReportsModule } from './medical-reports/medical-reports.module';
+import { SeedModule } from './seed/seed.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -35,6 +36,7 @@ import * as Joi from 'joi';
     PatientModule,
     OwnerModule,
     MedicalReportsModule,
+    SeedModule,
   ],
 })
 export class AppModule {}
