@@ -37,12 +37,6 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('confirm-email/:token')
-  confirmAccount(@Param('token', ParseTokenPipe) token: string) {
-    return this.authService.confirmAccount(token);
-  }
-
-  @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);

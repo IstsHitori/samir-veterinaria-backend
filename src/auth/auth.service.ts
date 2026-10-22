@@ -50,45 +50,14 @@ export class AuthService {
     await this.validIfAdmin(createUserDto.role);
     await this.ensureUserDoesNotExist(createUserDto.email);
     const user = await this.createUser(createUserDto);
-    const token = this.createToken(user._id as string, TOKEN_TYPE.CONFIRMATION);
-
-    await Promise.all([user.save(), token.save()]);
-
-    const emailSent = await this.sendEmail(
-      user.email,
-      token.value,
-      EMAIL_TYPE.CONFIRM_ACCOUNT,
-    );
-
-    return emailSent
-      ? 'Se ha registrado la cuenta correctamente'
-      : 'Se ha registrado la cuenta correctamente, pero no se pudo enviar el correo de confirmación. Revisa la configuración de correo.';
+    await user.save();
+    return 'Se ha registrado la cuenta correctamente';
   }
 
   async login({ password, email }: LoginUserDto) {
     const foundUser = await this.findAndValidateUserExistAndActive(email);
     await this.isMatchPasswordLogin(password, foundUser.password);
     return { token: this.getJwtToken({ id: foundUser._id as string }) };
-  }
-
-  async confirmAccount(token: string) {
-    const foundToken = await this.tokenService.findOneByToken(token);
-    if (!foundToken)
-      throw new NotFoundException(TOKEN_MESSAGES.TOKEN_NOT_FOUND);
-
-    if (foundToken.type !== TOKEN_TYPE.CONFIRMATION)
-      throw new BadRequestException(TOKEN_MESSAGES.TOKEN_INVALID);
-
-    const foundUser = await this.userService.findOne(foundToken.userId);
-    if (!foundUser || foundUser.isDeleted)
-      throw new NotFoundException(USER_VALIDATION_MESSAGES.USER_NOT_FOUND);
-
-    if (!foundUser.isActive)
-      throw new BadRequestException(USER_VALIDATION_MESSAGES.USER_INACTIVE);
-
-    foundUser.emailValidated = true;
-    await Promise.all([foundToken.deleteOne(), foundUser.save()]);
-    return 'Cuenta confirmada correctamente';
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
@@ -174,7 +143,6 @@ export class AuthService {
       email,
       FRONT_URL,
       WEBSERVICE_URL,
-      emailType,
     });
     return await this.mailService.sendEmail({
       to: email,

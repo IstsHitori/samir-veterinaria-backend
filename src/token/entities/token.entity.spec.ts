@@ -15,7 +15,7 @@ describe('Token schema', () => {
     const doc = new TokenModel({
       userId: 'user-1',
       value: '123456',
-      type: TOKEN_TYPE.CONFIRMATION,
+      type: TOKEN_TYPE.PASSWORD_RESET,
     });
 
     expect(doc.expiresAt).toBeInstanceOf(Date);

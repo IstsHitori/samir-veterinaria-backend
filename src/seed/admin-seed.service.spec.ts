@@ -8,7 +8,6 @@ const buildUser = (overrides: Record<string, any> = {}): any => ({
   lastName: 'Anterior',
   password: 'old-hashed-password',
   role: Role.ADMIN as Role,
-  emailValidated: false,
   isActive: false,
   isDeleted: true,
   deletedAt: new Date(),
@@ -77,7 +76,6 @@ describe('AdminSeedService', () => {
         email: 'admin@veterinaria.com',
         password: 'hashed-password',
         role: Role.ADMIN,
-        emailValidated: true,
         isActive: true,
         isDeleted: false,
         deletedAt: null,
@@ -168,7 +166,6 @@ describe('AdminSeedService', () => {
       expect(deletedAdmin.firstName).toBe('Samir');
       expect(deletedAdmin.lastName).toBe('Administrador');
       expect(deletedAdmin.password).toBe('hashed-password');
-      expect(deletedAdmin.emailValidated).toBe(true);
       expect(deletedAdmin.isActive).toBe(true);
       expect(deletedAdmin.isDeleted).toBe(false);
       expect(deletedAdmin.deletedAt).toBeNull();

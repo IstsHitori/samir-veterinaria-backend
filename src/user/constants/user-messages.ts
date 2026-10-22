@@ -12,7 +12,6 @@ export enum USER_VALIDATION_MESSAGES {
   PASSWORD_INVALID = 'Email o contraseña incorrectos',
   ROLE_REQUIRED = 'El rol es obligatorio.',
   ROLE_INVALID = 'El rol seleccionado no es válido.',
-  EMAIL_VALIDATED_BOOLEAN = 'El campo de validación de correo debe ser verdadero o falso.',
   DELETED_AT_DATE = 'La fecha de eliminación debe ser una fecha válida.',
   IS_DELETED_BOOLEAN = 'El campo de eliminado debe ser verdadero o falso.',
   IS_ACTIVE_BOOLEAN = 'El campo de activo debe ser verdadero o falso.',

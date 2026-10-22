@@ -86,7 +86,7 @@ describe('Veterinaria API (e2e)', () => {
 
   afterEach(async () => {
     await Promise.all(
-      Object.values(connection.collections).map((c) => c.deleteMany({})),
+      Object.values(connection.collections).map(c => c.deleteMany({})),
     );
   });
 
@@ -101,6 +101,16 @@ describe('Veterinaria API (e2e)', () => {
 
       expect(res.status).toBe(201);
       expect(res.text).toBe('Se ha registrado la cuenta correctamente');
+    });
+
+    it('no crea un token de verificación al registrar', async () => {
+      await register(
+        userPayload({ email: 'sin-verificacion@test.com' }),
+      ).expect(201);
+
+      await expect(
+        tokenModel.countDocuments({ type: 'confirmation' }),
+      ).resolves.toBe(0);
     });
 
     it('rechaza un email duplicado con 400', async () => {
@@ -190,32 +200,9 @@ describe('Veterinaria API (e2e)', () => {
     });
   });
 
-  describe('Confirmación de cuenta', () => {
-    it('confirma la cuenta con un token válido', async () => {
-      await register(userPayload({ email: 'confirm@test.com' })).expect(201);
-      const token = await getToken('confirm@test.com', TOKEN_TYPE.CONFIRMATION);
-
-      const res = await request(http).post(
-        `/api/auth/confirm-email/${token!.value}`,
-      );
-
-      expect(res.status).toBe(200);
-      expect(res.text).toBe('Cuenta confirmada correctamente');
-
-      const user = await userModel.findOne({ email: 'confirm@test.com' });
-      expect(user!.emailValidated).toBe(true);
-    });
-
-    it('devuelve 404 con un token inexistente', async () => {
-      const res = await request(http).post('/api/auth/confirm-email/000000');
-
-      expect(res.status).toBe(404);
-    });
-
-    it('devuelve 400 si el token no tiene 6 caracteres (pipe)', async () => {
-      const res = await request(http).post('/api/auth/confirm-email/123');
-
-      expect(res.status).toBe(400);
+  describe('Confirmación de cuenta retirada', () => {
+    it('ya no expone el endpoint de confirmación', async () => {
+      await request(http).post('/api/auth/confirm-email/123').expect(404);
     });
   });
 
@@ -338,19 +325,16 @@ describe('Veterinaria API (e2e)', () => {
     });
 
     it('rechaza crear un paciente con un dueño inexistente', async () => {
-      const res = await request(http)
-        .post('/api/patient')
-        .set(auth())
-        .send({
-          name: 'Firulais',
-          type: 'perro',
-          breed: 'Labrador',
-          birthDate: '2020-01-01',
-          gender: 'masculino',
-          weight: '20',
-          size: 'mediano',
-          ownerId: '507f191e810c19729de860ea',
-        });
+      const res = await request(http).post('/api/patient').set(auth()).send({
+        name: 'Firulais',
+        type: 'perro',
+        breed: 'Labrador',
+        birthDate: '2020-01-01',
+        gender: 'masculino',
+        weight: '20',
+        size: 'mediano',
+        ownerId: '507f191e810c19729de860ea',
+      });
 
       expect(res.status).toBe(404);
     });
@@ -403,9 +387,11 @@ describe('Veterinaria API (e2e)', () => {
           size: 'mediano',
           ownerId: ownerRes.body.ownerId,
         });
-      const patientId = (await request(http)
-        .get('/api/patient')
-        .set('Authorization', `Bearer ${adminToken}`)).body.patients[0]._id;
+      const patientId = (
+        await request(http)
+          .get('/api/patient')
+          .set('Authorization', `Bearer ${adminToken}`)
+      ).body.patients[0]._id;
       expect(patientRes.status).toBe(201);
 
       await register(

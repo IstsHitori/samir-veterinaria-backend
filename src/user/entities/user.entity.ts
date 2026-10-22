@@ -25,9 +25,6 @@ export class User extends Document {
   @Prop({ required: true, type: String, enum: Object.values(Role) })
   role: Role;
 
-  @Prop({ default: false })
-  emailValidated: boolean;
-
   @Prop({ type: Date, default: null })
   deletedAt: Date | null;
 
@@ -42,3 +39,11 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+// Keep legacy MongoDB values untouched, but never expose the removed field in API JSON.
+UserSchema.set('toJSON', {
+  transform: (_document, result) => {
+    delete (result as unknown as Record<string, unknown>).emailValidated;
+    return result;
+  },
+});

@@ -12,10 +12,13 @@ const validDto = {
 };
 
 const validateDto = (data: Record<string, any>) =>
-  validate(plainToInstance(CreateUserDto, data));
+  validate(plainToInstance(CreateUserDto, data), {
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  });
 
 const messagesOf = (errors: any[]) =>
-  errors.flatMap((e) => Object.values(e.constraints ?? {}));
+  errors.flatMap(e => Object.values(e.constraints ?? {}));
 
 describe('CreateUserDto', () => {
   it('acepta un payload válido', async () => {
@@ -25,7 +28,8 @@ describe('CreateUserDto', () => {
   });
 
   it('rechaza si falta el nombre', async () => {
-    const { firstName, ...rest } = validDto;
+    const rest = { ...validDto };
+    delete (rest as Partial<typeof validDto>).firstName;
     const errors = await validateDto(rest);
 
     expect(messagesOf(errors)).toContain(
@@ -53,5 +57,11 @@ describe('CreateUserDto', () => {
     const errors = await validateDto({ ...validDto, role: 'superadmin' });
 
     expect(messagesOf(errors)).toContain(USER_VALIDATION_MESSAGES.ROLE_INVALID);
+  });
+
+  it('rechaza el campo obsoleto emailValidated', async () => {
+    const errors = await validateDto({ ...validDto, emailValidated: true });
+
+    expect(errors.map(error => error.property)).toContain('emailValidated');
   });
 });

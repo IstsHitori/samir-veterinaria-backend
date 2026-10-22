@@ -9,7 +9,6 @@ describe('AuthController', () => {
     authService = {
       create: jest.fn(),
       login: jest.fn(),
-      confirmAccount: jest.fn(),
       forgotPassword: jest.fn(),
       validateToken: jest.fn(),
       updatePassword: jest.fn(),
@@ -37,13 +36,6 @@ describe('AuthController', () => {
 
     await expect(controller.login(dto)).resolves.toEqual({ token: 'jwt' });
     expect(authService.login).toHaveBeenCalledWith(dto);
-  });
-
-  it('confirmAccount delega con el token del parámetro', async () => {
-    authService.confirmAccount.mockResolvedValue('ok');
-
-    await expect(controller.confirmAccount('123456')).resolves.toBe('ok');
-    expect(authService.confirmAccount).toHaveBeenCalledWith('123456');
   });
 
   it('forgotPassword delega en authService.forgotPassword', async () => {

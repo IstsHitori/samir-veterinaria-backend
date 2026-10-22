@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Role, USER_VALIDATION_MESSAGES } from 'src/user/constants';
 import { TOKEN_MESSAGES } from 'src/common/constants/token-messages';
@@ -13,7 +13,6 @@ const buildUser = (overrides: Record<string, any> = {}) => ({
   role: Role.AUXILIARY as Role,
   isActive: true,
   isDeleted: false,
-  emailValidated: false,
   save: jest.fn().mockResolvedValue(true),
   ...overrides,
 });
@@ -36,7 +35,7 @@ describe('AuthService', () => {
     tokenDoc = {
       value: '123456',
       userId: VALID_ID,
-      type: TOKEN_TYPE.CONFIRMATION,
+      type: TOKEN_TYPE.PASSWORD_RESET,
       save: jest.fn().mockResolvedValue(true),
       deleteOne: jest.fn().mockResolvedValue({}),
     };
@@ -76,7 +75,7 @@ describe('AuthService', () => {
       lastName: 'Perez',
     };
 
-    it('registra al usuario: hashea la password, guarda usuario y token y envía el email', async () => {
+    it('registra al usuario sin crear token ni enviar correo de verificación', async () => {
       userService.findUserByEmail.mockResolvedValue(null);
 
       const result = await service.create(dto as any);
@@ -84,10 +83,9 @@ describe('AuthService', () => {
       expect(encryption.hash).toHaveBeenCalledWith('Secret123!');
       expect(userDoc.password).toBe('hashed');
       expect(userDoc.save).toHaveBeenCalled();
-      expect(tokenDoc.save).toHaveBeenCalled();
-      expect(mailService.sendEmail).toHaveBeenCalledWith(
-        expect.objectContaining({ to: userDoc.email }),
-      );
+      expect(tokenCtor).not.toHaveBeenCalled();
+      expect(tokenDoc.save).not.toHaveBeenCalled();
+      expect(mailService.sendEmail).not.toHaveBeenCalled();
       expect(result).toBe('Se ha registrado la cuenta correctamente');
     });
 
@@ -106,17 +104,6 @@ describe('AuthService', () => {
       await expect(
         service.create({ ...dto, role: Role.ADMIN } as any),
       ).rejects.toThrow(USER_VALIDATION_MESSAGES.CANT_BE_ADMIN);
-    });
-
-    it('registra la cuenta e informa cuando falla el envío del email', async () => {
-      userService.findUserByEmail.mockResolvedValue(null);
-      mailService.sendEmail.mockResolvedValue(false);
-
-      const result = await service.create(dto as any);
-
-      expect(result).toContain('Se ha registrado la cuenta correctamente');
-      expect(result).toContain('no se pudo enviar el correo');
-      expect(userDoc.save).toHaveBeenCalled();
     });
   });
 
@@ -149,70 +136,6 @@ describe('AuthService', () => {
       await expect(
         service.login({ email: 'no@test.com', password: 'x' } as any),
       ).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('confirmAccount', () => {
-    it('confirma la cuenta, marca emailValidated y elimina el token', async () => {
-      const token = {
-        type: TOKEN_TYPE.CONFIRMATION,
-        userId: VALID_ID,
-        deleteOne: jest.fn().mockResolvedValue({}),
-      };
-      tokenService.findOneByToken.mockResolvedValue(token);
-      const user = buildUser();
-      userService.findOne.mockResolvedValue(user);
-
-      const result = await service.confirmAccount('123456');
-
-      expect(user.emailValidated).toBe(true);
-      expect(user.save).toHaveBeenCalled();
-      expect(token.deleteOne).toHaveBeenCalled();
-      expect(result).toBe('Cuenta confirmada correctamente');
-    });
-
-    it('lanza NotFound si el token no existe', async () => {
-      tokenService.findOneByToken.mockResolvedValue(null);
-
-      await expect(service.confirmAccount('123456')).rejects.toThrow(
-        TOKEN_MESSAGES.TOKEN_NOT_FOUND,
-      );
-    });
-
-    it('lanza BadRequest si el token no es de confirmación', async () => {
-      tokenService.findOneByToken.mockResolvedValue({
-        type: TOKEN_TYPE.PASSWORD_RESET,
-      });
-
-      await expect(service.confirmAccount('123456')).rejects.toThrow(
-        TOKEN_MESSAGES.TOKEN_INVALID,
-      );
-    });
-
-    it('lanza NotFound si el usuario no existe o está eliminado', async () => {
-      tokenService.findOneByToken.mockResolvedValue({
-        type: TOKEN_TYPE.CONFIRMATION,
-        userId: VALID_ID,
-        deleteOne: jest.fn(),
-      });
-      userService.findOne.mockResolvedValue(null);
-
-      await expect(service.confirmAccount('123456')).rejects.toThrow(
-        USER_VALIDATION_MESSAGES.USER_NOT_FOUND,
-      );
-    });
-
-    it('lanza BadRequest si el usuario está inactivo', async () => {
-      tokenService.findOneByToken.mockResolvedValue({
-        type: TOKEN_TYPE.CONFIRMATION,
-        userId: VALID_ID,
-        deleteOne: jest.fn(),
-      });
-      userService.findOne.mockResolvedValue(buildUser({ isActive: false }));
-
-      await expect(service.confirmAccount('123456')).rejects.toThrow(
-        USER_VALIDATION_MESSAGES.USER_INACTIVE,
-      );
     });
   });
 
@@ -261,7 +184,7 @@ describe('AuthService', () => {
 
     it('lanza BadRequest si el token no es de reset', async () => {
       tokenService.findOneByToken.mockResolvedValue({
-        type: TOKEN_TYPE.CONFIRMATION,
+        type: 'invalid_token_type',
       });
 
       await expect(
@@ -301,7 +224,10 @@ describe('AuthService', () => {
 
       await expect(
         service.updatePassword(
-          { newPassword: 'NewSecret1#', confirmNewPassword: 'NewSecret1#' } as any,
+          {
+            newPassword: 'NewSecret1#',
+            confirmNewPassword: 'NewSecret1#',
+          } as any,
           '000000',
         ),
       ).rejects.toThrow(TOKEN_MESSAGES.TOKEN_NOT_FOUND);

@@ -98,7 +98,6 @@ export class AdminSeedService implements OnApplicationBootstrap {
         email,
         password: hashedPassword,
         role: Role.ADMIN,
-        emailValidated: true,
         isActive: true,
         isDeleted: false,
         deletedAt: null,
@@ -125,7 +124,6 @@ export class AdminSeedService implements OnApplicationBootstrap {
     user.firstName = data.firstName;
     user.lastName = data.lastName;
     user.password = data.hashedPassword;
-    user.emailValidated = true;
     user.isActive = true;
     user.isDeleted = false;
     user.deletedAt = null;

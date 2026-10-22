@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   IsString,
   IsEmail,
@@ -36,10 +35,6 @@ export class CreateUserDto {
   @IsEnum(Role, { message: USER_VALIDATION_MESSAGES.ROLE_INVALID })
   @IsNotEmpty({ message: USER_VALIDATION_MESSAGES.ROLE_REQUIRED })
   role: Role;
-
-  @IsBoolean({ message: USER_VALIDATION_MESSAGES.EMAIL_VALIDATED_BOOLEAN })
-  @IsOptional()
-  emailValidated?: boolean;
 
   @IsDate({ message: USER_VALIDATION_MESSAGES.DELETED_AT_DATE })
   @IsOptional()
