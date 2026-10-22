@@ -5,22 +5,26 @@ interface PropsOptionsEmail {
   token: string;
   email: string;
   FRONT_URL: string;
+  WEBSERVICE_URL: string;
   emailType: EMAIL_TYPE;
 }
 
 export const getTemplateEmail = ({
   token,
   FRONT_URL,
+  WEBSERVICE_URL,
   email,
   emailType,
 }: PropsOptionsEmail): string => {
   let template: string = '';
+  const bannerUrl = `${WEBSERVICE_URL.replace(/\/+$/, '')}/public/bg-banner.svg`;
 
   switch (emailType) {
     case EMAIL_TYPE.CONFIRM_ACCOUNT:
       template = EmailsTemplates.getConfirmationTemplate({
         token,
         FRONT_URL,
+        bannerUrl,
         to: email,
       });
       break;
@@ -28,6 +32,7 @@ export const getTemplateEmail = ({
       template = EmailsTemplates.getResendConfirmationTemplate({
         token,
         FRONT_URL,
+        bannerUrl,
         to: email,
       });
       break;
@@ -35,6 +40,7 @@ export const getTemplateEmail = ({
       template = EmailsTemplates.getResetPasswordTemplate({
         token,
         FRONT_URL,
+        bannerUrl,
         to: email,
       });
       break;

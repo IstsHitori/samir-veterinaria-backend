@@ -168,7 +168,14 @@ export class AuthService {
     emailType: EMAIL_TYPE,
   ): Promise<boolean> {
     const FRONT_URL = this.configService.get<string>('FRONT_URL')!;
-    const template = getTemplateEmail({ token, email, FRONT_URL, emailType });
+    const WEBSERVICE_URL = this.configService.get<string>('WEBSERVICE_URL')!;
+    const template = getTemplateEmail({
+      token,
+      email,
+      FRONT_URL,
+      WEBSERVICE_URL,
+      emailType,
+    });
     return await this.mailService.sendEmail({
       to: email,
       subject: emailType,

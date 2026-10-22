@@ -1,6 +1,7 @@
 interface HtmlTemplateOptions {
   token: string;
   FRONT_URL: string;
+  bannerUrl: string;
   to: string;
 }
 
@@ -8,6 +9,7 @@ export class EmailsTemplates {
   static getConfirmationTemplate({
     token,
     FRONT_URL,
+    bannerUrl,
     to,
   }: HtmlTemplateOptions): string {
     return `
@@ -28,10 +30,13 @@ export class EmailsTemplates {
               font-family: 'Segoe UI', Arial, sans-serif;
               color: #333;
             }
-            .logo {
+            .email-banner {
               display: block;
-              margin: 0 auto 24px auto;
-              width: 80px;
+              width: 100%;
+              max-width: 480px;
+              height: auto;
+              margin: 0 auto 24px;
+              border-radius: 8px 8px 0 0;
             }
             .btn {
               display: inline-block;
@@ -57,7 +62,7 @@ export class EmailsTemplates {
         </head>
         <body style="background: #f4f6f8; padding: 32px 0;">
           <div class="container">
-            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Veterinaria" class="logo" />
+            <img src="${bannerUrl}" alt="Veterinaria" class="email-banner" width="480" />
             <h2>¡Bienvenido a Veterinaria!</h2>
             <p>
               Gracias señor(a) <span style="font-weight:bold;">${to}</span> por registrarte. Para activar tu cuenta, por favor haz clic en el siguiente botón y digite el siguiente código: <span style="font-weight:bold;">${token}</span>
@@ -83,6 +88,7 @@ export class EmailsTemplates {
   static getResendConfirmationTemplate({
     token,
     FRONT_URL,
+    bannerUrl,
     to,
   }: HtmlTemplateOptions): string {
     return `
@@ -107,10 +113,13 @@ export class EmailsTemplates {
               box-shadow: 0 4px 24px rgba(0,0,0,0.08);
               padding: 40px 32px 32px 32px;
             }
-            .logo {
+            .email-banner {
               display: block;
-              margin: 0 auto 24px auto;
-              width: 80px;
+              width: 100%;
+              max-width: 480px;
+              height: auto;
+              margin: 0 auto 24px;
+              border-radius: 12px 12px 0 0;
             }
             h2 {
               color: #4caf50;
@@ -160,7 +169,7 @@ export class EmailsTemplates {
         </head>
         <body>
           <div class="container">
-            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Veterinaria" class="logo" />
+            <img src="${bannerUrl}" alt="Veterinaria" class="email-banner" width="480" />
             <h2>Reenvío de Token de Confirmación</h2>
             <p>
               Hola <span style="font-weight:bold;">${to}</span>,<br>
@@ -192,6 +201,7 @@ export class EmailsTemplates {
   static getResetPasswordTemplate({
     token,
     FRONT_URL,
+    bannerUrl,
     to,
   }: HtmlTemplateOptions): string {
     return `
@@ -217,9 +227,13 @@ export class EmailsTemplates {
               padding: 32px 28px 24px 28px;
               text-align: center;
             }
-            .logo {
-              width: 64px;
-              margin-bottom: 18px;
+            .email-banner {
+              display: block;
+              width: 100%;
+              max-width: 420px;
+              height: auto;
+              margin: 0 auto 18px;
+              border-radius: 12px 12px 0 0;
             }
             h2 {
               color: #1976d2;
@@ -269,7 +283,7 @@ export class EmailsTemplates {
           </head>
           <body>
             <div class="container">
-              <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Veterinaria" class="logo" />
+              <img src="${bannerUrl}" alt="Veterinaria" class="email-banner" width="420" />
               <h2>Recuperación de contraseña</h2>
               <p>
                 Hola <span style="font-weight:bold;">${to}</span>,<br>
