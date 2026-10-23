@@ -8,24 +8,6 @@ const options = {
 };
 
 describe('EmailsTemplates', () => {
-  it('getConfirmationTemplate incluye token, url y destinatario', () => {
-    const html = EmailsTemplates.getConfirmationTemplate(options);
-
-    expect(html).toContain('123456');
-    expect(html).toContain('http://front.test');
-    expect(html).toContain('ana@test.com');
-    expect(html).toContain('src="https://api.test/public/bg-banner.svg"');
-  });
-
-  it('getResendConfirmationTemplate incluye token, url y destinatario', () => {
-    const html = EmailsTemplates.getResendConfirmationTemplate(options);
-
-    expect(html).toContain('123456');
-    expect(html).toContain('http://front.test');
-    expect(html).toContain('ana@test.com');
-    expect(html).toContain('src="https://api.test/public/bg-banner.svg"');
-  });
-
   it('getResetPasswordTemplate incluye token, url y destinatario', () => {
     const html = EmailsTemplates.getResetPasswordTemplate(options);
 

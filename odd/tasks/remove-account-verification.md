@@ -33,8 +33,8 @@ Checks: Backend build and unit suite; frontend build and focused ESLint on chang
 
 ## Tasks
 
-- T1 — S1, S2, S3 — Inline — Complete — Remove backend field/registration verification, confirmation endpoint/token handling, and seed behavior; commit pending.
-- T2 — S1, S2, S3 — Inline — Open — Remove dormant backend confirmation email types/templates and related tests; preserve reset template; commit pending.
+- T1 — S1, S2, S3 — Inline — Complete — Remove backend field/registration verification, confirmation endpoint/token handling, and seed behavior; commit `609f29f`.
+- T2 — S1, S2, S3 — Inline — Complete — Remove dormant backend confirmation email types/templates and related tests; preserve reset template; commit pending.
 - T3 — S1, S2, S3 — Inline — Open — Remove frontend confirmation route/page/API/schema/UI; preserve reset flows and run cross-repository checks; commit pending.
 
 ## Log
@@ -64,9 +64,10 @@ The user chose `Conservarlos (recomendado)`: legacy `emailValidated` values stay
 
 - Registration now saves the user without creating a token or sending mail. The confirm-email controller/service, confirmation token type, seed field, and related confirmation-flow tests are removed. Dormant confirmation email types/templates remain for T2. Password-reset behavior and tests remain.
 - The Mongoose `User` schema no longer declares `emailValidated`; its JSON transform suppresses legacy values while leaving stored documents unchanged, as requested.
-- `npm test -- --runInBand` — 33 suites / 179 tests passed. `npm run build` — passed. Prettier check and targeted ESLint on production files — passed.
+- Parent worktree `npm test -- --runInBand` — 33 suites / 179 tests passed. Independent verification of commit `609f29f` in scratch — 33 suites / 181 tests passed; `npm run build` passed. Prettier and targeted production ESLint checks passed.
 - `npm run test:e2e -- --runInBand --testNamePattern="ya no expone el endpoint de confirmación"` — unavailable: the E2E app could not connect to local MongoDB (`ECONNREFUSED 127.0.0.1:27017`) before tests ran. The E2E regression assertions are present but unverified in this environment.
 - The registration/no-verification and obsolete-field DTO tests produced RED before implementation and GREEN afterward. The endpoint removal is implemented in the controller; its HTTP 404 E2E assertion remains unverified because the E2E database is unavailable.
+- T1 work-unit commit: `609f29f` (`fix(auth): register users without account verification`). The e2e attempt was made before backend implementation and could not connect to the local MongoDB service.
 
 ### L6 — Delivery threshold
 
@@ -76,3 +77,13 @@ The user chose `Conservarlos (recomendado)`: legacy `emailValidated` values stay
 ### L7 — Delivery strategy
 
 - User selected `stacked-to-main` before the first commit. Backend core removal, backend confirmation transport/artifacts, and frontend cleanup are separate candidate slices. No PR or push is authorized or planned in this task.
+
+### L8 — T1 native review
+
+- Native assessment classified commit `609f29f` high risk because it changes the authentication hot path. The user granted candidate review; native review `review-8a6de1c305e50c35` was approved and exactly acknowledged. No reviewer findings were reported.
+
+### L9 — T2 backend mail cleanup
+
+- Removed the confirmation/resend email types, helper branches, template methods, and their tests. The reset-password email type, helper, template, and tests remain.
+- `npm test -- --runInBand` — 33 suites / 179 tests passed. `npm run build` — passed. Prettier check and targeted ESLint on production files — passed.
+- Backend source scan found no active account-verification references; intentional negative regression checks and the legacy JSON-suppression compatibility shim remain.
