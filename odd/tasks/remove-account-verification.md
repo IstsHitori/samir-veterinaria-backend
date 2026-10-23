@@ -34,8 +34,8 @@ Checks: Backend build and unit suite; frontend build and focused ESLint on chang
 ## Tasks
 
 - T1 — S1, S2, S3 — Inline — Complete — Remove backend field/registration verification, confirmation endpoint/token handling, and seed behavior; commit `609f29f`.
-- T2 — S1, S2, S3 — Inline — Complete — Remove dormant backend confirmation email types/templates and related tests; preserve reset template; commit pending.
-- T3 — S1, S2, S3 — Inline — Open — Remove frontend confirmation route/page/API/schema/UI; preserve reset flows and run cross-repository checks; commit pending.
+- T2 — S1, S2, S3 — Inline — Complete — Remove dormant backend confirmation email types/templates and related tests; preserve reset template; commit `0ffb423`.
+- T3 — S1, S2, S3 — Inline — Complete — Remove frontend confirmation route/page/API/schema/UI; preserve reset flows and run cross-repository checks; commit pending.
 
 ## Log
 
@@ -49,7 +49,7 @@ The user chose `Conservarlos (recomendado)`: legacy `emailValidated` values stay
 
 ### L3 — Baseline and mapping
 
-- Backend baseline: `dfa9678`; frontend baseline: `e41e0df`. Both repositories were clean on `main`.
+- Backend baseline: `dfa9678`; frontend baseline: `7a48835`. Both repositories were clean on `main`.
 - Backend registration creates a confirmation token and email; login does not check `emailValidated`. Password reset uses the same mail/token infrastructure and must be preserved.
 - Frontend confirmation route and schema/UI references must be removed; reset routes remain.
 - Existing confirmation tokens expire through the token schema's five-minute TTL; no explicit token cleanup is included.
@@ -87,3 +87,11 @@ The user chose `Conservarlos (recomendado)`: legacy `emailValidated` values stay
 - Removed the confirmation/resend email types, helper branches, template methods, and their tests. The reset-password email type, helper, template, and tests remain.
 - `npm test -- --runInBand` — 33 suites / 179 tests passed. `npm run build` — passed. Prettier check and targeted ESLint on production files — passed.
 - Backend source scan found no active account-verification references; intentional negative regression checks and the legacy JSON-suppression compatibility shim remain.
+- T2 work-unit commit: `0ffb423` (`refactor(mail): remove account confirmation templates`). Native assessment against `609f29f`: medium, `review_due=false` (`under_budget`), 229 changed lines.
+
+### L10 — T3 frontend verification
+
+- Removed the confirmation route/page, client/store/hook method, validation fields, email-status indicators, and static profile-verification markers. Forgot/reset-password routes and calls remain unchanged.
+- Frontend `git grep` found no active references to account verification. `npm run build` — passed; focused ESLint on changed files — passed. No frontend test script is configured.
+- Backend unit suite and build remain green. Backend E2E verification remains unavailable because local MongoDB was not running.
+- Parent baseline check: the role-route changes in `PrivateLayout.tsx`, `PublicLayout.tsx`, `app-sidebar.tsx`, and `app-role-routes.ts` already exist at frontend baseline `7a48835`; they are not part of this feature diff.
